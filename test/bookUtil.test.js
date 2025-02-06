@@ -113,12 +113,12 @@ describe('Book API', () => {
 
         it('should add a new book successfully', (done) => {
             const validPayload = {
-                name: 'book111',
+                name: 'NewUniqueBook',  // Changed from 'book111'
                 shelf_no: '111',
                 category: 'Fiction',
                 author: 'John'
             };
-
+        
             chai.request(baseUrl)
                 .post('/add-resource')
                 .send(validPayload)
@@ -127,7 +127,7 @@ describe('Book API', () => {
                     expect(res).to.have.status(201);
                     expect(res.body).to.be.an('array');
                     expect(res.body.length).to.equal(initialBookCount + 1);
-
+        
                     newBookId = res.body[res.body.length - 1].id;
                     done();
                 });
