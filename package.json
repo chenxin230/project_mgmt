@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "backend-test": "nyc --nycrc-path .nycrc-backend mocha"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,11 @@
   "homepage": "https://github.com/chenxin230/project_mgmt#readme",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
     "express": "^4.21.2",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "mocha": "^11.1.0",
+    "nyc": "^17.1.0"
   }
 }
