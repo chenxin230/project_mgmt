@@ -1,4 +1,4 @@
-name: Automatic Testing for book Web App
+name: Automatic Testing for Resource Management Web App
 
 on:
   push:
@@ -22,8 +22,15 @@ jobs:
     - name: Clean install dependencies
       run: npm ci
       
+    - name: Setup test environment
+      run: |
+        mkdir -p utils
+        echo '[]' > utils/book.json
+        chmod 666 utils/book.json
+        
     - name: Run tests
       run: |
-        npm run backend-test
+        DEBUG=* npm run backend-test
       env:
         CI: true
+        NODE_ENV: test
