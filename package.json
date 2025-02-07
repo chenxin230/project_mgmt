@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "backend-test": "nyc --nycrc-path .nycrc-backend mocha"
+    "backend-test": "npx nyc --nycrc-path .nycrc-backend mocha"
   },
   "repository": {
     "type": "git",
