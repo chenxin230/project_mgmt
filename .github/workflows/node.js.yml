@@ -17,10 +17,13 @@ jobs:
         node-version: 18
         
     - name: Remove existing node_modules folder from cloned project
-      run: rm -rf /home/runner/work/resource-mgmt/resource-mgmt/node_modules/*
+      run: rm -rf node_modules/*
     
     - name: Install dependencies for based on package.json
       run: npm install
+
+    - name: Fix permissions for node_modules/.bin
+      run: chmod -R +x node_modules/.bin
     
     - name: Run tests in "tests" folder
       run: npm run backend-test
