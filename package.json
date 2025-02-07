@@ -23,7 +23,9 @@
     "chai-http": "^4.3.0",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
-    "mocha": "^11.1.0",
+    "mocha": "^11.1.0"
+  },
+  "devDependencies": {
     "nyc": "^17.1.0"
   }
 }
