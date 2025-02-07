@@ -2,7 +2,6 @@ const { describe, it, before, after } = require('mocha');
 const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const fs = require('fs').promises;
 
 const { app, server } = require('../index');
 chai.use(chaiHttp);
@@ -11,9 +10,6 @@ let baseUrl;
 
 describe('Book API', () => {
     before(async () => {
-        // Reset the book.json file to an empty array
-        await fs.writeFile('utils/book.json', JSON.stringify([]), 'utf8');
-
         const { address, port } = await server.address();
         baseUrl = `http://${address === '::' ? 'localhost' : address}:${port}`;
     });
@@ -118,19 +114,16 @@ describe('Book API', () => {
         it('should add a new book successfully', (done) => {
             const uniqueId = Date.now();
             const validPayload = {
-                name: `TestBook_${uniqueId}`,
-                shelf_no: `${uniqueId % 1000}`,
+                name: `TestBook_${uniqueId}`,  // Ensure unique name
+                shelf_no: `${uniqueId % 1000}`,  // Ensure unique shelf number
                 category: 'Fiction',
-                author: `TestAuthor_${uniqueId}`
+                author: `TestAuthor_${uniqueId}`  // Ensure unique author
             };
         
             chai.request(baseUrl)
                 .post('/add-resource')
                 .send(validPayload)
                 .end((err, res) => {
-                    if (err || res.status !== 201) {
-                        console.error('Test failed. Response body:', res.body); // Log the response body
-                    }
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     expect(res.body).to.be.an('array');
