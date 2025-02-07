@@ -2,6 +2,7 @@ const { describe, it, before, after } = require('mocha');
 const { expect } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const fs = require('fs').promises;
 
 const { app, server } = require('../index');
 chai.use(chaiHttp);
@@ -10,6 +11,9 @@ let baseUrl;
 
 describe('Book API', () => {
     before(async () => {
+        // Reset the book.json file to an empty array
+        await fs.writeFile('utils/book.json', JSON.stringify([]), 'utf8');
+
         const { address, port } = await server.address();
         baseUrl = `http://${address === '::' ? 'localhost' : address}:${port}`;
     });

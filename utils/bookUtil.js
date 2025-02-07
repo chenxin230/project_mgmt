@@ -22,6 +22,8 @@ async function addResource(req, res) {
     try {
         const { name, shelf_no, category, author } = req.body;
 
+        console.log('Received payload:', { name, shelf_no, category, author }); // Log the payload
+
         // Validation checks
         if (!name) return res.status(400).json({ message: 'Name is required' });
         if (!shelf_no || isNaN(Number(shelf_no))) return res.status(400).json({ message: 'Shelf number must be a valid number' });
@@ -54,6 +56,7 @@ async function addResource(req, res) {
         const updatedBooks = await writeJSON(newBook, 'utils/book.json');
         return res.status(201).json(updatedBooks);
     } catch (error) {
+        console.error('Error in addResource:', error); // Log the error
         return res.status(500).json({ message: error.message });
     }
 }
