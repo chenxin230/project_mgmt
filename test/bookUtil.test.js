@@ -112,11 +112,12 @@ describe('Book API', () => {
         });
 
         it('should add a new book successfully', (done) => {
+            const uniqueId = Date.now();
             const validPayload = {
-                name: 'NewUniqueBook',  // Changed from 'book111'
-                shelf_no: '111',
+                name: `TestBook_${uniqueId}`,  // Ensure unique name
+                shelf_no: `${uniqueId % 1000}`,  // Ensure unique shelf number
                 category: 'Fiction',
-                author: 'John'
+                author: `TestAuthor_${uniqueId}`  // Ensure unique author
             };
         
             chai.request(baseUrl)
@@ -127,7 +128,6 @@ describe('Book API', () => {
                     expect(res).to.have.status(201);
                     expect(res.body).to.be.an('array');
                     expect(res.body.length).to.equal(initialBookCount + 1);
-        
                     newBookId = res.body[res.body.length - 1].id;
                     done();
                 });
