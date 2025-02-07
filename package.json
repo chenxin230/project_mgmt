@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "backend-test": "nyc --nycrc-path .nycrc-backend mocha"
+    "backend-test": "nyc --nycrc-path .nycrc-backend mocha",
+    "frontend-instrument": "xcopy public instrumented /I /E /Y & nyc instrument public instrumented",
+    "frontend-test": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,11 @@
   },
   "homepage": "https://github.com/chenxin230/project_mgmt#readme",
   "dependencies": {
+    "@cypress/code-coverage": "^3.13.11",
     "body-parser": "^1.20.3",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "cypress": "^14.0.2",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "mocha": "^11.1.0",

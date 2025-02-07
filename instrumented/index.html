@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        .table-striped-custom tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        .header-section {
+            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .book-card {
+            transition: transform 0.2s;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+        .action-buttons button {
+            margin: 0 0.2rem;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+            color: white;
+        }
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section text-center">
+        <h1>Library Management System</h1>
+        <p class="lead">Manage your books efficiently</p>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col text-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#resourceModal">
+                    <i class="fas fa-plus"></i> Add New Book
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Book Name</th>
+                                    <th>Shelf No.</th>
+                                    <th>Category</th>
+                                    <th>Author</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableContent">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div class="modal fade" id="resourceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBookForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Book Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="shelf_no" class="form-label">Shelf Number</label>
+                            <input type="number" class="form-control" id="shelf_no" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="category" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="author" required>
+                        </div>
+                        <p id="message" class="text-end mb-0"></p>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addResource()">Add Book</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 and Required Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script>
+        // Your existing JavaScript code for addResource and viewResources goes here
+        function addResource() {
+            var response = "";
+
+            var jsonData = new Object();
+            jsonData.name = document.getElementById("name").value;
+            jsonData.shelf_no = document.getElementById("shelf_no").value;
+            jsonData.category = document.getElementById("category").value;
+            jsonData.author = document.getElementById("author").value;
+
+            // Validation checks
+            if (jsonData.name == "") {
+                showMessage('Name is required!', 'danger');
+                return;
+            }
+            if (jsonData.shelf_no == "" || isNaN(jsonData.shelf_no)) {
+                showMessage('Shelf number must be a valid number!', 'danger');
+                return;
+            }
+            if (jsonData.category == "") {
+                showMessage('Category is required!', 'danger');
+                return;
+            }
+            if (jsonData.author == "") {
+                showMessage('Author is required!', 'danger');
+                return;
+            }
+
+            var request = new XMLHttpRequest();
+            request.open("POST", "/add-resource", true);
+            request.setRequestHeader('Content-Type', 'application/json');
+
+            request.onload = function () {
+                response = JSON.parse(request.responseText);
+                if (response.message == undefined) {
+                    showMessage('Added Book: ' + jsonData.name + '!', 'success');
+                    clearForm();
+                    viewResources();
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('resourceModal')).hide();
+                    }, 1500);
+                } else {
+                    showMessage('Unable to add book!', 'danger');
+                }
+            };
+
+            request.send(JSON.stringify(jsonData));
+        }
+
+        function viewResources() {
+            var request = new XMLHttpRequest();
+            request.open('GET', '/view-resources', true);
+            request.setRequestHeader('Content-Type', 'application/json');
+
+            request.onload = function () {
+                var response = JSON.parse(request.responseText);
+                var html = '';
+                
+                response.forEach((book, index) => {
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${book.name}</td>
+                            <td>${book.shelf_no}</td>
+                            <td><span class="badge bg-info">${book.category}</span></td>
+                            <td>${book.author}</td>
+                            <td class="action-buttons">
+                                <button type="button" class="btn btn-warning btn-sm" onclick='editResource(${JSON.stringify(book).replace(/'/g, "\\'")})'><i class="fas fa-edit"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteResource(${book.id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                });
+
+                document.getElementById('tableContent').innerHTML = html;
+            };
+
+            request.send();
+        }
+
+        function showMessage(message, type) {
+            const messageElement = document.getElementById("message");
+            messageElement.innerHTML = message;
+            messageElement.className = `text-${type} mb-0`;
+        }
+
+        function clearForm() {
+            document.getElementById("name").value = "";
+            document.getElementById("shelf_no").value = "";
+            document.getElementById("category").value = "";
+            document.getElementById("author").value = "";
+            document.getElementById("message").innerHTML = "";
+        }
+
+        // Initialize the view on page load
+        document.addEventListener('DOMContentLoaded', viewResources);
+    </script>
+</body>
+</html>
