@@ -112,27 +112,26 @@ describe('Book API', () => {
         });
 
         it('should add a new book successfully', (done) => {
-            const timestamp = Date.now(); // Add timestamp to make book name unique
+            const uniqueId = Date.now();
             const validPayload = {
-                name: `TestBook_${timestamp}`, // This ensures a unique name
-                shelf_no: '111',
+                name: `TestBook_${uniqueId}`,  // Ensure unique name
+                shelf_no: `${uniqueId % 1000}`,  // Ensure unique shelf number
                 category: 'Fiction',
-                author: 'John'
+                author: `TestAuthor_${uniqueId}`  // Ensure unique author
             };
         
             chai.request(baseUrl)
-            .post('/add-resource')
-            .send(validPayload)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res).to.have.status(201);
-                expect(res.body).to.be.an('array');
-                expect(res.body.length).to.equal(initialBookCount + 1);
-
-                newBookId = res.body[res.body.length - 1].id;
-                done();
-            });
-    });
+                .post('/add-resource')
+                .send(validPayload)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    expect(res).to.have.status(201);
+                    expect(res.body).to.be.an('array');
+                    expect(res.body.length).to.equal(initialBookCount + 1);
+                    newBookId = res.body[res.body.length - 1].id;
+                    done();
+                });
+        });
 
         it('should return 400 for duplicate book', (done) => {
             const duplicatePayload = {
