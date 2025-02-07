@@ -114,16 +114,19 @@ describe('Book API', () => {
         it('should add a new book successfully', (done) => {
             const uniqueId = Date.now();
             const validPayload = {
-                name: `TestBook_${uniqueId}`,  // Ensure unique name
-                shelf_no: `${uniqueId % 1000}`,  // Ensure unique shelf number
+                name: `TestBook_${uniqueId}`,
+                shelf_no: `${uniqueId % 1000}`,
                 category: 'Fiction',
-                author: `TestAuthor_${uniqueId}`  // Ensure unique author
+                author: `TestAuthor_${uniqueId}`
             };
         
             chai.request(baseUrl)
                 .post('/add-resource')
                 .send(validPayload)
                 .end((err, res) => {
+                    if (err || res.status !== 201) {
+                        console.error('Test failed. Response body:', res.body); // Log the response body
+                    }
                     expect(err).to.be.null;
                     expect(res).to.have.status(201);
                     expect(res.body).to.be.an('array');
