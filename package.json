@@ -7,7 +7,7 @@
     "backend-test": "nyc --nycrc-path .nycrc-backend mocha",
     "frontend-instrument": "xcopy public instrumented /I /E /Y & nyc instrument public instrumented",
     "frontend-test": "rimraf .nyc_output && rimraf instrumented && nyc instrument public instrumented --complete-copy && nyc --nycrc-path .nycrc-frontend cypress run"
-},
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chenxin230/project_mgmt.git"
@@ -23,7 +23,6 @@
     "body-parser": "^1.20.3",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
-    "cypress": "^14.0.2",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "mocha": "^11.1.0",
@@ -31,6 +30,7 @@
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.13.11",
+    "cypress": "^14.0.2",
     "rimraf": "^6.0.1"
   }
 }
