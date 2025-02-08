@@ -166,9 +166,6 @@
             request.send(JSON.stringify(jsonData));
         }
 
-        // This makes the initial GET request when page loads
-        document.addEventListener('DOMContentLoaded', viewResources);
-
         function viewResources() {
             var request = new XMLHttpRequest();
             request.open('GET', '/view-resources', true);
@@ -178,7 +175,6 @@
                 var response = JSON.parse(request.responseText);
                 var html = '';
                 
-                // This loop creates table rows for each book in the database
                 response.forEach((book, index) => {
                     html += `
                         <tr>
