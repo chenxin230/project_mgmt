@@ -6,7 +6,7 @@
   "scripts": {
     "backend-test": "nyc --nycrc-path .nycrc-backend mocha",
     "frontend-instrument": "xcopy public instrumented /I /E /Y & nyc instrument public instrumented",
-    "frontend-test": "rimraf .nyc_output && rimraf instrumented && nyc instrument public instrumented --complete-copy && nyc --nycrc-path .nycrc-frontend cypress run"
+    "frontend-test": "cypress install && rimraf .nyc_output && rimraf instrumented && nyc instrument public instrumented --complete-copy && nyc --nycrc-path .nycrc-frontend cypress run"
   },
   "repository": {
     "type": "git",
