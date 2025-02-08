@@ -1,0 +1,9 @@
+services:
+  build-rms:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    image: snack226/rms-docker-img:v4
+    container_name: rms-docker-container
+    ports:
+      - "8000:5050" 

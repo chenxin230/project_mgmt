@@ -116,7 +116,8 @@
     <!-- Bootstrap 5 and Required Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-    <script src="js/books.js">
+    <script src="js/books.js"></script>
+    <script>
         // Your existing JavaScript code for addResource and viewResources goes here
         function addResource() {
             var response = "";
@@ -166,6 +167,9 @@
             request.send(JSON.stringify(jsonData));
         }
 
+        // This makes the initial GET request when page loads
+        document.addEventListener('DOMContentLoaded', viewResources);
+
         function viewResources() {
             var request = new XMLHttpRequest();
             request.open('GET', '/view-resources', true);
@@ -175,6 +179,7 @@
                 var response = JSON.parse(request.responseText);
                 var html = '';
                 
+                // This loop creates table rows for each book in the database
                 response.forEach((book, index) => {
                     html += `
                         <tr>
