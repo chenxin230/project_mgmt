@@ -11,106 +11,118 @@
 
             // Validation checks
             if (jsonData.name == "") {
-                document.getElementById("message").innerHTML = 'Name is required!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+                this.showMessage('Name is required!', 'danger');
                 return;
             }
             if (jsonData.shelf_no == "" || isNaN(jsonData.shelf_no)) {
-                document.getElementById("message").innerHTML = 'Shelf number must be a valid number!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+                this.showMessage('Shelf number must be a valid number!', 'danger');
                 return;
             }
             if (jsonData.category == "") {
-                document.getElementById("message").innerHTML = 'Category is required!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+                this.showMessage('Category is required!', 'danger');
                 return;
             }
             if (jsonData.author == "") {
-                document.getElementById("message").innerHTML = 'Author is required!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+                this.showMessage('Author is required!', 'danger');
                 return;
             }
             if (parseInt(jsonData.shelf_no) <= 0) {
-                document.getElementById("message").innerHTML = 'Shelf number should be a positive number!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+                this.showMessage('Shelf number should be a positive number!', 'danger');
                 return;
             }
             if (jsonData.name.length > 255) {
-                document.getElementById("message").innerHTML = 'Name is too long!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+                this.showMessage('Name is too long!', 'danger');
                 return;
             }
 
             var request = new XMLHttpRequest();
-
             request.open("POST", "/add-resource", true);
             request.setRequestHeader('Content-Type', 'application/json');
 
-            request.onload = function () {
+            request.onload = () => {
                 try {
                     response = JSON.parse(request.responseText);
                     console.log(response);
 
-                    // Explicitly check for successful response
                     if (request.status === 201 || request.status === 200) {
-                        document.getElementById("message").innerHTML = 'Added Resource: ' + jsonData.name + '!';
-                        document.getElementById("message").setAttribute("class", "text-success");
-
-                        // Clear the fields after successful submission
-                        document.getElementById("name").value = "";
-                        document.getElementById("shelf_no").value = "";
-                        document.getElementById("category").value = "";
-                        document.getElementById("author").value = "";
+                        this.showMessage('Added Book: ' + jsonData.name + '!', 'success');
+                        this.clearForm();
+                        this.viewResources();
                         
-                        // Redirect to index.html after a successful add
-                        window.location.href = 'index.html';
+                        // Close modal after delay
+                        setTimeout(() => {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('resourceModal'));
+                            if (modal) {
+                                modal.hide();
+                            }
+                        }, 1500);
                     } else {
-                        document.getElementById("message").innerHTML = 'Error: ' + (response.message || 'Unknown error');
-                        document.getElementById("message").setAttribute("class", "text-danger");
+                        this.showMessage('Error: ' + (response.message || 'Unknown error'), 'danger');
                     }
                 } catch (error) {
-                    document.getElementById("message").innerHTML = 'Processing error: ' + error.message;
-                    document.getElementById("message").setAttribute("class", "text-danger");
+                    this.showMessage('Processing error: ' + error.message, 'danger');
                 }
             };
 
-            request.onerror = function() {
-                document.getElementById("message").innerHTML = 'Network error occurred!';
-                document.getElementById("message").setAttribute("class", "text-danger");
+            request.onerror = () => {
+                this.showMessage('Network error occurred!', 'danger');
             };
 
             request.send(JSON.stringify(jsonData));
         },
 
         viewResources: function() {
-            var response = '';
             var request = new XMLHttpRequest();
-
             request.open('GET', '/view-resources', true);
             request.setRequestHeader('Content-Type', 'application/json');
 
-            request.onload = function () {
-                response = JSON.parse(request.responseText);
-                
-                var html = '';
-                for (var i = 0; i < response.length; i++) {
-                    html += '<tr>' +
-                        '<td>' + (i + 1) + '</td>' +
-                        '<td>' + response[i].name + '</td>' +
-                        '<td>' + response[i].shelf_no + '</td>' +
-                        '<td>' + response[i].category + '</td>' +
-                        '<td>' + response[i].author + '</td>' +
-                        '<td>' +
-                            '<button type="button" class="btn btn-warning" onclick="bookOperations.editResource(\'' + JSON.stringify(response[i]).replaceAll('\"', '&quot;') + '\')">Edit </button> ' + 
-                            '<button type="button" class="btn btn-danger" onclick="bookOperations.deleteResource(' + response[i].id + ')"> Delete</button>' + 
-                        '</td>' +
-                    '</tr>';
-                }
+            request.onload = () => {
+                try {
+                    const response = JSON.parse(request.responseText);
+                    
+                    var html = '';
+                    response.forEach((book, index) => {
+                        html += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${book.name}</td>
+                                <td>${book.shelf_no}</td>
+                                <td><span class="badge bg-info">${book.category}</span></td>
+                                <td>${book.author}</td>
+                            </tr>`;
+                    });
 
-                document.getElementById('tableContent').innerHTML = html;
+                    document.getElementById('tableContent').innerHTML = html;
+                } catch (error) {
+                    console.error('Error loading resources:', error);
+                    this.showMessage('Error loading books', 'danger');
+                }
+            };
+
+            request.onerror = () => {
+                this.showMessage('Network error while loading books', 'danger');
             };
 
             request.send();
         },
+
+        showMessage: function(message, type) {
+            const messageElement = document.getElementById("message");
+            messageElement.innerHTML = message;
+            messageElement.className = `text-${type} mb-0`;
+        },
+
+        clearForm: function() {
+            document.getElementById("name").value = "";
+            document.getElementById("shelf_no").value = "";
+            document.getElementById("category").value = "";
+            document.getElementById("author").value = "";
+            document.getElementById("message").innerHTML = "";
+        }
     };
+
+    // Initialize the view on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        window.bookOperations.viewResources();
+    });
 })(window);
