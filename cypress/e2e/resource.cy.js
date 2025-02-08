@@ -103,6 +103,39 @@ describe('Library Management System', () => {
     });
   });
 
+  it('should handle server errors when adding a book', () => {
+    cy.intercept('POST', '/add-resource', {
+      statusCode: 500,
+      body: { message: 'Internal Server Error' }
+    }).as('serverError');
+
+    cy.get('button[data-bs-toggle="modal"][data-bs-target="#resourceModal"]').click();
+    cy.get('#name').clear().type('Error Test Book');
+    cy.get('#shelf_no').clear().type('42');
+    cy.get('#category').clear().type('Fiction');
+    cy.get('#author').clear().type('Test Author');
+    
+    cy.get('.modal-footer .btn-primary').click();
+    cy.wait('@serverError');
+    cy.get('#message').should('contain', 'Error');
+  });
+
+    // New test for handling network errors
+  it('should handle network errors when adding a book', () => {
+    cy.intercept('POST', '/add-resource', {
+      forceNetworkError: true
+    }).as('networkError');
+
+    cy.get('button[data-bs-toggle="modal"][data-bs-target="#resourceModal"]').click();
+    cy.get('#name').clear().type('Network Error Test Book');
+    cy.get('#shelf_no').clear().type('42');
+    cy.get('#category').clear().type('Fiction');
+    cy.get('#author').clear().type('Test Author');
+    
+    cy.get('.modal-footer .btn-primary').click();
+    cy.wait('@networkError');
+    cy.get('#message').should('contain', 'Network error');
+  });
   // it('should handle adding multiple books successfully', () => {
   //   const timestamp = Date.now();
   //   const books = [
